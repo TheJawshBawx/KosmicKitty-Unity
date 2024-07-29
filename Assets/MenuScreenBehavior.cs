@@ -88,6 +88,16 @@ public class MenuScreenBehavior : MonoBehaviour
         return screen_values;
     }
 
+    void Awake()
+    {
+        // Ensure gameScreen is not destroyed on load
+        if (gameScreen.transform.parent != null)
+        {
+            gameScreen.transform.SetParent(null);
+        }
+        DontDestroyOnLoad(gameScreen);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
