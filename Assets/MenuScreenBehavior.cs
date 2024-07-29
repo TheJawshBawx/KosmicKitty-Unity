@@ -100,7 +100,7 @@ public class MenuScreenBehavior : MonoBehaviour
         screenToValuesDict = new Dictionary<string, screenValues>() {
             {"splash",  MakeScreenValueStruct(splashScreen, true)},
             {"loading", MakeScreenValueStruct(loadingScreen, true)},
-            {"game", MakeScreenValueStruct(gameScreen, false)},
+            {"game", MakeScreenValueStruct(gameScreen, true)},
             // {"options", MakeScreenValueStruct(optionsMenuScreen, false)}, // Menu screens to be implemented later
             // {"exit", MakeScreenValueStruct(exitScreen, true)}
         };
@@ -134,17 +134,17 @@ public class MenuScreenBehavior : MonoBehaviour
         // dynamically changing the visible screen based on the timer
         switch (currentScreen)
         {
-            case "splash":
+            case "game":
                 if (timer >= splashScreenSeconds)
                 {
-                    currentScreen = "loading";
+                    currentScreen = "splash";
                     setCurrentScreen(screenToValuesDict, currentScreen);
                 }
                 break;
-            case "loading":
+            case "splash":
                 if (timer >= loadingScreenSeconds)
                 {
-                    currentScreen = "main";
+                    currentScreen = "loading";
                     setCurrentScreen(screenToValuesDict, currentScreen);
                 }
                 break;
