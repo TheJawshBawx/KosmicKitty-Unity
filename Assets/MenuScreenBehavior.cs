@@ -15,6 +15,7 @@ public class MenuScreenBehavior : MonoBehaviour
     public float timer = 0.0f; // Timer for initial screens
     private float splashScreenSeconds = 5.0f;
     private float loadingScreenSeconds = 5.0f;
+    private float gameScreenSeconds = 20.0f;
     private float exitScreenSeconds = 5.0f;
 
     // Struct for screen timing
@@ -22,12 +23,14 @@ public class MenuScreenBehavior : MonoBehaviour
     {
         public string sceneName; // Name of the scene associated with the screen
         public bool isTimed; // bool defining whether or not the screen is timed or not
+        public bool isAdditive; // bool defining whether the screen should be loaded additively
 
         // Constructor for initializing 
-        public screenValues(string sceneName, bool is_timed)
+        public screenValues(string sceneName, bool is_timed, bool is_additive)
         {
             this.sceneName = sceneName;
             this.isTimed = is_timed;
+            this.isAdditive = is_additive;
         }
     }
 
@@ -42,31 +45,27 @@ public class MenuScreenBehavior : MonoBehaviour
 
     void setCurrentScreen(Dictionary<string, screenValues> screen_dict, string screen)
     {
-        /*
-        This function takes in a dictionary mapping strings to screen scenes and a string.
-        It uses the string to set the corresponding scene from the dictionary to active
-        and deactivates every other scene in the dictionary.
-        Args:
-            screen_dict (Dictionary<string, screenValues>) : a dictionary mapping strings to screen scenes
-            screen (string) : the scene to be set active
-        This function returns nothing. 
-        */
         foreach (var pair in screen_dict)
         {
             if (pair.Key == screen)
             {
-                SceneManager.LoadSceneAsync(pair.Value.sceneName, LoadSceneMode.Additive);
-            }
-            else
-            {
-                SceneManager.UnloadSceneAsync(pair.Value.sceneName);
+                if (pair.Value.isAdditive)
+                {
+                    SceneManager.LoadSceneAsync(pair.Value.sceneName, LoadSceneMode.Additive);
+                }
+                else
+                {
+                    SceneManager.LoadSceneAsync(pair.Value.sceneName, LoadSceneMode.Single);
+                }
             }
         }
-        timer = 0.0f; // resets the timer to be used for the next timed screen
-        isCurrentScreenTimed = screen_dict[screen].isTimed; // starts timer again if the next screen is timed
+
+        timer = 0.0f;
+        isCurrentScreenTimed = screen_dict[screen].isTimed;
+        currentScreen = screen; // Update currentScreen here
     }
 
-    screenValues MakeScreenValueStruct(string sceneName, bool is_timed)
+    screenValues MakeScreenValueStruct(string sceneName, bool is_timed, bool is_additive)
     {
         /*
         This is a helper function which takes in a scene name and a bool to create a screenValues
@@ -75,10 +74,11 @@ public class MenuScreenBehavior : MonoBehaviour
         Args:
             sceneName (string) : a string representing a screen scene
             is_timed (bool) : a boolean value representing whether the same screen is timed
+            is_additive (bool) : a boolean value representing whether the screen should be loaded additively
         Returns:
-            screen_values (screenValues) : a screenValues struct with fields populated using sceneName and is_timed
+            screen_values (screenValues) : a screenValues struct with fields populated using sceneName, is_timed, and is_additive
         */
-        screenValues screen_values = new screenValues(sceneName, is_timed);
+        screenValues screen_values = new screenValues(sceneName, is_timed, is_additive);
         return screen_values;
     }
 
@@ -92,15 +92,16 @@ public class MenuScreenBehavior : MonoBehaviour
         */
         // initializing a dictionary mapping each screen to a struct containing its values
         screenToValuesDict = new Dictionary<string, screenValues>() {
-            {"splash",  MakeScreenValueStruct("SplashScreen", true)},
-            {"loading", MakeScreenValueStruct("LoadingScreen", true)},
-            {"main", MakeScreenValueStruct("mainScreen", true)},
-            // {"options", MakeScreenValueStruct("OptionsMenuScreen", false)}, // Menu screens to be implemented later
-            // {"exit", MakeScreenValueStruct("ExitScreen", true)}
+            {"main", MakeScreenValueStruct("mainScreen", true, false)},
+            {"splash",  MakeScreenValueStruct("splashScreen", true, true)},
+            {"loading", MakeScreenValueStruct("loadingScreen", true, true)},
+            {"game", MakeScreenValueStruct("gameScreen", true, true)},
+            // {"options", MakeScreenValueStruct("OptionsMenuScreen", false, false)}, // Menu screens to be implemented later
+            // {"exit", MakeScreenValueStruct("ExitScreen", true, false)}
         };
 
         currentScreen = "main";
-        setCurrentScreen(screenToValuesDict, currentScreen); // starts the menu-scene scene displaying only the splash screen
+        setCurrentScreen(screenToValuesDict, currentScreen); // starts the main scene and sets values
 
         // Button implementation to follow
 
@@ -140,6 +141,24 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     currentScreen = "loading";
                     setCurrentScreen(screenToValuesDict, currentScreen);
+                        SceneManager.UnloadSceneAsync("splashScreen"); // Unload splash screen when loading screen is loaded
+
+                }
+                break;
+            case "loading":
+                if (timer >= gameScreenSeconds)
+                {
+                    currentScreen = "game";
+                    setCurrentScreen(screenToValuesDict, currentScreen);
+                        SceneManager.UnloadSceneAsync("loadingScreen"); // Unload splash screen when loading screen is loaded
+                }
+                break;
+            case "game":
+                if (timer >= exitScreenSeconds)
+                {
+                    currentScreen = "exit";
+                    setCurrentScreen(screenToValuesDict, currentScreen);
+                        SceneManager.UnloadSceneAsync("gameScreen"); // Unload splash screen when loading screen is loaded
                 }
                 break;
             case "exit":
