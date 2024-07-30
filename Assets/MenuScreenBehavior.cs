@@ -92,7 +92,7 @@ public class MenuScreenBehavior : MonoBehaviour
         */
         // initializing a dictionary mapping each screen to a struct containing its values
         screenToValuesDict = new Dictionary<string, screenValues>() {
-            {"main", MakeScreenValueStruct("mainScreen", true, false)},
+            {"main", MakeScreenValueStruct("mainScreen", false, false)},
             {"splash",  MakeScreenValueStruct("splashScreen", true, true)},
             {"loading", MakeScreenValueStruct("loadingScreen", true, true)},
             {"game", MakeScreenValueStruct("gameScreen", true, true)},
@@ -141,7 +141,7 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     currentScreen = "loading";
                     setCurrentScreen(screenToValuesDict, currentScreen);
-                        SceneManager.UnloadSceneAsync("splashScreen"); // Unload splash screen when loading screen is loaded
+                    SceneManager.UnloadSceneAsync("splashScreen"); // Unload splash screen when loading screen is loaded
 
                 }
                 break;
@@ -150,7 +150,7 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     currentScreen = "game";
                     setCurrentScreen(screenToValuesDict, currentScreen);
-                        SceneManager.UnloadSceneAsync("loadingScreen"); // Unload splash screen when loading screen is loaded
+                    SceneManager.UnloadSceneAsync("loadingScreen"); // Unload splash screen when loading screen is loaded
                 }
                 break;
             case "game":
@@ -158,7 +158,7 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     currentScreen = "exit";
                     setCurrentScreen(screenToValuesDict, currentScreen);
-                        SceneManager.UnloadSceneAsync("gameScreen"); // Unload splash screen when loading screen is loaded
+                    SceneManager.UnloadSceneAsync("gameScreen"); // Unload splash screen when loading screen is loaded
                 }
                 break;
             case "exit":
