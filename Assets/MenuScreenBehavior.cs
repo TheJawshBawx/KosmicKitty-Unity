@@ -132,33 +132,28 @@ public class MenuScreenBehavior : MonoBehaviour
             case "main":
                 if (timer >= splashScreenSeconds)
                 {
-                    currentScreen = "splash";
-                    setCurrentScreen(screenToValuesDict, currentScreen);
+                    setCurrentScreen(screenToValuesDict, "splash");
                 }
                 break;
             case "splash":
                 if (timer >= loadingScreenSeconds)
                 {
-                    currentScreen = "loading";
-                    setCurrentScreen(screenToValuesDict, currentScreen);
+                    setCurrentScreen(screenToValuesDict, "loading");
                     SceneManager.UnloadSceneAsync("splashScreen"); // Unload splash screen when loading screen is loaded
-
                 }
                 break;
             case "loading":
                 if (timer >= gameScreenSeconds)
                 {
-                    currentScreen = "game";
-                    setCurrentScreen(screenToValuesDict, currentScreen);
-                    SceneManager.UnloadSceneAsync("loadingScreen"); // Unload splash screen when loading screen is loaded
+                    setCurrentScreen(screenToValuesDict, "game");
+                    SceneManager.UnloadSceneAsync("loadingScreen"); // Unload loading screen when game screen is loaded
                 }
                 break;
             case "game":
                 if (timer >= exitScreenSeconds)
                 {
-                    currentScreen = "exit";
-                    setCurrentScreen(screenToValuesDict, currentScreen);
-                    SceneManager.UnloadSceneAsync("gameScreen"); // Unload splash screen when loading screen is loaded
+                    setCurrentScreen(screenToValuesDict, "exit");
+                    SceneManager.UnloadSceneAsync("gameScreen"); // Unload game screen when exit screen is loaded
                 }
                 break;
             case "exit":
