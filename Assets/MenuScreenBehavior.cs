@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class MenuScreenBehavior : MonoBehaviour
@@ -16,23 +17,16 @@ public class MenuScreenBehavior : MonoBehaviour
     private float loadingScreenSeconds = 5.0f;
     private float exitScreenSeconds = 5.0f;
 
-    // Game objects to be rendered
-    public GameObject gameScreen;
-    public GameObject splashScreen;
-    public GameObject loadingScreen;
-    public GameObject exitScreen;
-    public GameObject terminal;
-
     // Struct for screen timing
     struct screenValues
     {
-        public GameObject screenObject; // Object associated with the screen
+        public string sceneName; // Name of the scene associated with the screen
         public bool isTimed; // bool defining whether or not the screen is timed or not
 
         // Constructor for initializing 
-        public screenValues(GameObject obj, bool is_timed)
+        public screenValues(string sceneName, bool is_timed)
         {
-            this.screenObject = obj;
+            this.sceneName = sceneName;
             this.isTimed = is_timed;
         }
     }
@@ -49,11 +43,11 @@ public class MenuScreenBehavior : MonoBehaviour
     void setCurrentScreen(Dictionary<string, screenValues> screen_dict, string screen)
     {
         /*
-        This function takes in a dictionary mapping strings to game objects and a string.
-        It uses the string to set the corresponding object from the dictionary to active
-        and deactivates every other gameobject in the dictionary.
+        This function takes in a dictionary mapping strings to screen scenes and a string.
+        It uses the string to set the corresponding scene from the dictionary to active
+        and deactivates every other scene in the dictionary.
         Args:
-            screen_dict (Dictionary<string, GameObject>) : a dictionary mapping strings to screen game objects
+            screen_dict (Dictionary<string, screenValues>) : a dictionary mapping strings to screen scenes
             screen (string) : the scene to be set active
         This function returns nothing. 
         */
@@ -61,41 +55,31 @@ public class MenuScreenBehavior : MonoBehaviour
         {
             if (pair.Key == screen)
             {
-                pair.Value.screenObject.SetActive(true);
+                SceneManager.LoadSceneAsync(pair.Value.sceneName, LoadSceneMode.Additive);
             }
             else
             {
-                pair.Value.screenObject.SetActive(false);
+                SceneManager.UnloadSceneAsync(pair.Value.sceneName);
             }
         }
         timer = 0.0f; // resets the timer to be used for the next timed screen
         isCurrentScreenTimed = screen_dict[screen].isTimed; // starts timer again if the next screen is timed
     }
 
-    screenValues MakeScreenValueStruct(GameObject obj, bool is_timed)
+    screenValues MakeScreenValueStruct(string sceneName, bool is_timed)
     {
         /*
-        This is a helper function which takes in a GameObject and a bool to create a screenValues
+        This is a helper function which takes in a scene name and a bool to create a screenValues
         struct. This is done because it makes the objective of creating a screenValues struct 
         much easier to read and much more concise. This function returns a screenValues structure.
         Args:
-            obj (GameObject) : a unity GameObject representing a screen
+            sceneName (string) : a string representing a screen scene
             is_timed (bool) : a boolean value representing whether the same screen is timed
         Returns:
-            screen_values (screenValues) : a screenValues struct with fields populated using obj and is_timed
+            screen_values (screenValues) : a screenValues struct with fields populated using sceneName and is_timed
         */
-        screenValues screen_values = new screenValues(obj, is_timed);
+        screenValues screen_values = new screenValues(sceneName, is_timed);
         return screen_values;
-    }
-
-    void Awake()
-    {
-        // Ensure gameScreen is not destroyed on load
-        if (gameScreen.transform.parent != null)
-        {
-            gameScreen.transform.SetParent(null);
-        }
-        DontDestroyOnLoad(gameScreen);
     }
 
     // Start is called before the first frame update
@@ -108,14 +92,14 @@ public class MenuScreenBehavior : MonoBehaviour
         */
         // initializing a dictionary mapping each screen to a struct containing its values
         screenToValuesDict = new Dictionary<string, screenValues>() {
-            {"splash",  MakeScreenValueStruct(splashScreen, true)},
-            {"loading", MakeScreenValueStruct(loadingScreen, true)},
-            {"game", MakeScreenValueStruct(gameScreen, true)},
-            // {"options", MakeScreenValueStruct(optionsMenuScreen, false)}, // Menu screens to be implemented later
-            // {"exit", MakeScreenValueStruct(exitScreen, true)}
+            {"splash",  MakeScreenValueStruct("SplashScreen", true)},
+            {"loading", MakeScreenValueStruct("LoadingScreen", true)},
+            {"main", MakeScreenValueStruct("mainScreen", true)},
+            // {"options", MakeScreenValueStruct("OptionsMenuScreen", false)}, // Menu screens to be implemented later
+            // {"exit", MakeScreenValueStruct("ExitScreen", true)}
         };
 
-        currentScreen = "game";
+        currentScreen = "main";
         setCurrentScreen(screenToValuesDict, currentScreen); // starts the menu-scene scene displaying only the splash screen
 
         // Button implementation to follow
@@ -144,7 +128,7 @@ public class MenuScreenBehavior : MonoBehaviour
         // dynamically changing the visible screen based on the timer
         switch (currentScreen)
         {
-            case "game":
+            case "main":
                 if (timer >= splashScreenSeconds)
                 {
                     currentScreen = "splash";
