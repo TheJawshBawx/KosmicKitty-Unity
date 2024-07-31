@@ -52,10 +52,12 @@ public class MenuScreenBehavior : MonoBehaviour
                 if (pair.Value.isAdditive)
                 {
                     SceneManager.LoadSceneAsync(pair.Value.sceneName, LoadSceneMode.Additive);
+                    Debug.Log("Loading scene additively: " + pair.Value.sceneName);
                 }
                 else
                 {
                     SceneManager.LoadSceneAsync(pair.Value.sceneName, LoadSceneMode.Single);
+                    Debug.Log("Loading scene singularly: " + pair.Value.sceneName);
                 }
             }
         }
@@ -63,6 +65,7 @@ public class MenuScreenBehavior : MonoBehaviour
         timer = 0.0f;
         isCurrentScreenTimed = screen_dict[screen].isTimed;
         currentScreen = screen; // Update currentScreen here
+        Debug.Log("Current screen is now: " + currentScreen);
     }
 
     screenValues MakeScreenValueStruct(string sceneName, bool is_timed, bool is_additive)
@@ -102,6 +105,7 @@ public class MenuScreenBehavior : MonoBehaviour
 
         currentScreen = "main";
         setCurrentScreen(screenToValuesDict, currentScreen); // starts the main scene and sets values
+        Debug.Log("Starting main screen");
 
         // Button implementation to follow
 
@@ -124,6 +128,7 @@ public class MenuScreenBehavior : MonoBehaviour
         {
             // only updates timer on timed screens
             timer += Time.deltaTime;
+            Debug.Log("Timer: " + timer);
         }
 
         // dynamically changing the visible screen based on the timer
@@ -133,6 +138,7 @@ public class MenuScreenBehavior : MonoBehaviour
                 if (timer >= splashScreenSeconds)
                 {
                     setCurrentScreen(screenToValuesDict, "splash");
+                    Debug.Log("Loading splash screen");
                 }
                 break;
             case "splash":
@@ -140,6 +146,7 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     setCurrentScreen(screenToValuesDict, "loading");
                     SceneManager.UnloadSceneAsync("splashScreen"); // Unload splash screen when loading screen is loaded
+                    Debug.Log("Loading loading screen");
                 }
                 break;
             case "loading":
@@ -147,6 +154,7 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     setCurrentScreen(screenToValuesDict, "game");
                     SceneManager.UnloadSceneAsync("loadingScreen"); // Unload loading screen when game screen is loaded
+                    Debug.Log("Loading game screen");
                 }
                 break;
             case "game":
@@ -154,12 +162,14 @@ public class MenuScreenBehavior : MonoBehaviour
                 {
                     setCurrentScreen(screenToValuesDict, "exit");
                     SceneManager.UnloadSceneAsync("gameScreen"); // Unload game screen when exit screen is loaded
+                    Debug.Log("Loading exit screen");
                 }
                 break;
             case "exit":
                 if (timer >= exitScreenSeconds)
                 {
                     Application.Quit();
+                    Debug.Log("Quitting application");
                 }
                 break;
         }
