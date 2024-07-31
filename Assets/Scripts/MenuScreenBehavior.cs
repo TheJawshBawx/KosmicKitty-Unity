@@ -21,6 +21,9 @@ public class MenuScreenBehavior : MonoBehaviour
     // Struct for screen timing
     struct screenValues
     {
+        // break point
+        
+
         public string sceneName; // Name of the scene associated with the screen
         public bool isTimed; // bool defining whether or not the screen is timed or not
         public bool isAdditive; // bool defining whether the screen should be loaded additively
@@ -130,18 +133,21 @@ public class MenuScreenBehavior : MonoBehaviour
         */
         Debug.Log("Void Update");
 
-        if (isCurrentScreenTimed)
-        {
+        // if (isCurrentScreenTimed)
+        // {
             // only updates timer on timed screens
-            timer += Time.deltaTime;
-            Debug.Log("Timer Started ");
-        }
+            // timer += Time.deltaTime;
+            // Debug.Log("Timer Started ");
+        // }
         
         // dynamically changing the visible screen based on the timer
         switch (currentScreen)
         {
             case "main":
             Debug.Log("Switch Started");
+                timer += Time.deltaTime;
+                Debug.Log("Timer Started ");
+                Debug.Log("Timer: " + timer);
                 if (timer >= splashScreenSeconds)
                 {
                     setCurrentScreen(screenToValuesDict, "splash");
